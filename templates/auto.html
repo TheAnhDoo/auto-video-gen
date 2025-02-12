@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI-Generated Scripts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function generateScripts() {
+            fetch("/auto", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "action=generate"
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML = `<p>${data.message}</p>`;
+                location.reload();
+            });
+        }
+
+        function scheduleScripts() {
+            fetch("/auto", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "action=schedule"
+            })
+            .then(response => response.json())
+            .then(data => document.getElementById("result").innerHTML = `<p>${data.message}</p>`);
+        }
+
+        function createVideoNow(index) {
+            fetch("/auto", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `action=create_now&script_index=${index}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`video-result-${index}`).innerHTML = `<p>✅ Video Created! <a href="${data.url}" target="_blank">View Here</a></p>`;
+                } else {
+                    document.getElementById(`video-result-${index}`).innerHTML = `<p>❌ Error: ${data.error}</p>`;
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>AI-Generated Scripts for 10 Days</h1>
+    <button onclick="generateScripts()">Generate Scripts</button>
+    <button onclick="scheduleScripts()">Schedule All Videos</button>
+    
+    <div id="result"></div>
+
+    <h2>Generated Scripts</h2>
+    {% for script in scripts %}
+        <div class="script-box">
+            <h3>{{ script.date }}</h3>
+            <p>{{ script.script }}</p>
+            <button onclick="createVideoNow('{{ loop.index0 }}')">Generate Video</button>
+            <div id="video-result-{{ loop.index0 }}"></div>
+        </div>
+    {% endfor %}
+</body>
+</html>

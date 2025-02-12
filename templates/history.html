@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Script History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Saved Scripts</h1>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Script</th>
+            <th>Source</th>
+            <th>Status</th>
+        </tr>
+        {% for script in scripts %}
+        <tr>
+            <td>{{ script[1] }}</td>
+            <td>{{ script[2] }}</td>
+            <td>{{ script[3] }}</td>
+            <td>{{ script[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

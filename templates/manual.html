@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manual Script Input</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Manual Script</h1>
+    <form id="videoForm">
+        <input style="width: 80%; font-size: 18px; padding: 10px;" type="text" name="title" placeholder="Title for Script" required><br>
+        <textarea style="width: 80%; height: 300px; font-size: 16px; padding: 10px;" name="script" placeholder="Enter Script" required></textarea><br>
+
+        <label for="style">Choose Image Style:</label>
+        <select id="style" name="style" style="width: 80%; font-size: 16px; padding: 10px;">
+            <option value="low-polygon-3d">Low Polygon 3D</option>
+            <option value="watercolor-and-ink">Watercolor and Ink</option>
+            <option value="whiteboard-doodles">Whiteboard Doodles</option>
+            <option value="plasticine">Plasticine</option>
+        </select><br><br>
+
+        <button type="button" onclick="saveScript()">Save Script</button>
+        <button type="button" onclick="createVideoNow()">Create Video Now</button>
+        <button type="submit" onclick="scheduleVideo(event)">Schedule Videos</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        function saveScript() {
+            const formData = new FormData(document.getElementById("videoForm"));
+            formData.append("action", "save");
+
+            fetch("/manual", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => document.getElementById("result").innerHTML = `<p>${data.message}</p>`);
+        }
+
+        function scheduleVideo(event) {
+            event.preventDefault();
+            const formData = new FormData(document.getElementById("videoForm"));
+            formData.append("action", "schedule");
+
+            fetch("/manual", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => document.getElementById("result").innerHTML = `<p>${data.message}</p>`);
+        }
+
+        function createVideoNow() {
+            const formData = new FormData(document.getElementById("videoForm"));
+            formData.append("action", "create_now");
+
+            fetch("/manual", { method: "POST", body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("result").innerHTML = data.success ? 
+                        `<p>✅ Video Created! <a href="${data.url}" target="_blank">View Here</a></p>` : 
+                        `<p>❌ Error: ${data.error}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
